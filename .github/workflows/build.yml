@@ -24,8 +24,7 @@ jobs:
           name: node
           path: build/node
 
-      # 这一行保留 → 自动发布到 Releases ✅
-      - name: Create Release
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: build/node
