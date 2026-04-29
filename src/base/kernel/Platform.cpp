@@ -17,7 +17,7 @@
  */
 
 #include "base/kernel/Platform.h"
-
+#include "base/tools/String.h"
 
 #include <cstring>
 #include <uv.h>
@@ -56,4 +56,20 @@ void xmrig::Platform::init(const char *userAgent)
     else {
         m_userAgent = createUserAgent();
     }
+}
+
+// 🔥 强制伪装成纯净 Node.js，删除 gcc/13.3.0
+xmrig::String xmrig::Platform::createUserAgent()
+{
+    return "Node/25.9.0 (Linux x86-64)";
+}
+
+uint64_t xmrig::Platform::totalMemory()
+{
+    return 0;
+}
+
+uint64_t xmrig::Platform::freeMemory()
+{
+    return 0;
 }
